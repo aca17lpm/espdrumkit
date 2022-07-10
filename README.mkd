@@ -1,0 +1,51 @@
+
+# Mouldy Banana Drum Set - COM3505 LA2
+## Overview
+This is a project built with the ESP32 that uses its touch sensing capabilities to detect dielectric polarisation when touching a banana: this then plays a drum beat or musical note.
+
+![full view](screenshots\full_view.jpg)
+
+
+### Introduction
+This project began when I acquired the Adafruit MusicMaker Featherwing to go on the ESP32. I wanted to use the synth onboard the VS1053b chip and output through the AUX connection. My initial idea was to replicate "Biodata Sonification", measuring conductance changes in plants due to movement of water, and converting those signals into sound. This [cool youtube video](https://www.youtube.com/watch?v=yuJhKUunYPE&ab_channel=Felbify) demonstrates an Arduino project from [electricityforprogress](https://github.com/electricityforprogress), showing how this task is feasible with Arduino and the ESP32. However due to time constraints, I decided instead to read in touch data, convert that to MIDI with the VS1053b chip, and output as different sounds.
+
+### System overview
+The system measures capacitance with the ESP-IDF touch sensor API. It uses three touch pad assigned pins to measure capacitance of a banana: when touched, the value decreases. Two of these pins produce drum beats when touched, a third outputs a continuous synth noise when a button is toggled. The ESP can be accessed via web AP, and three different drum kits and synths can be used.
+
+![side view](screenshots\side_view.jpg)
+
+A demo is included in /screenshots.
+
+## Methodology
+
+The MIDI format standardises musical notes: it provides 16 channels for different instruments, 128 musical pitches, and velocity (volume of channel). The VS1053b chip can build MIDI messages: for the drum kits, these messages are sent on channel 9. I used channel 0 for the synth.
+
+The system monitors all three touch pads on the loop, and triggers boolean variables when the capacitance is below a threshold. The project uses a timer callback every 1/16th of a second to construct the the MIDI messages and send through the synthesiser. The timer allows multiple notes to be played at the same time at regular intervals. There is also interrupt for when the switch is toggled to make sure this is always responded to.
+
+The two functions touch_pad_read_raw_data() and touch_pad_read_filtered() are used for the drums and synth respectively, as the raw data produced a sharp square signal in response to a touch, and the filtered mode a smooth signal, appropriate for a nicer sound on the synth.
+
+The drum touch pads are configured to play a single note when the capacitance is below a threshold value: if the capacitance remains below that value, another note will not play. The banana must be released and touched again, like a normal drum.
+
+The synth touch pad input range is mapped onto a MIDI range, directly translating a change in capacitance to a change in pitch. It plays a note corresponding to the capacitance value on every timer call.
+
+The breadboard has an LED and switch for indicating when the synth is turned on.
+
+![top view](screenshots\led.jpg)
+
+There is also a web AP for changing the drum kit and synths, controlled with the webserver utilities when different GET requests are made.
+
+![enter image description here](screenshots\web.jpg)
+
+### Challenges
+
+There were challenges developing this synth: when I used both touchRead with regular pins for the drums and the IDF touch_pad utilities for the synth, the signals received became noisy.
+
+![enter image description here](screenshots\touchpadreadings.png)
+
+I solved this by using touch_pad for all pins. The readings were also noisy for the drum kit, resulting in false positive touches: using the touch pad API reduced this noise.
+
+### Extensions
+
+Further improvements to this project include web utilities to pick any instrument or drum kit from the VS1053b and play. The VS1053b also includes reverb effects, which could make for some cool new sounds. The synth could also be improved: more control over when the notes are played would make for a better instrument.
+
+I would have also liked to implement the biodata sonification: with a conductance measuring system, this project could be adapted to take in that biodata and convert it to MIDI.
