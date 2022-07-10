@@ -3,7 +3,7 @@
 ## Overview
 This is a project built with the ESP32 that uses its touch sensing capabilities to detect dielectric polarisation when touching a banana: this then plays a drum beat or musical note.
 
-![full view](LA2\screenshots\full_view.jpg)
+![full view](LA2/screenshots/full_view.jpg)
 
 
 ### Introduction
