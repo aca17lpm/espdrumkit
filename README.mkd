@@ -3,7 +3,7 @@
 ## Overview
 This is a project built with the ESP32 that uses its touch sensing capabilities to detect dielectric polarisation when touching a banana: this then plays a drum beat or musical note.
 
-![full view](screenshots\full_view.jpg)
+![full view](LA2\screenshots\full_view.jpg)
 
 
 ### Introduction
@@ -12,9 +12,9 @@ This project began when I acquired the Adafruit MusicMaker Featherwing to go on 
 ### System overview
 The system measures capacitance with the ESP-IDF touch sensor API. It uses three touch pad assigned pins to measure capacitance of a banana: when touched, the value decreases. Two of these pins produce drum beats when touched, a third outputs a continuous synth noise when a button is toggled. The ESP can be accessed via web AP, and three different drum kits and synths can be used.
 
-![side view](screenshots\side_view.jpg)
+![side view](LA2\screenshots\side_view.jpg)
 
-A demo is included in /screenshots.
+A demo is included in \screenshots.
 
 ## Methodology
 
@@ -30,17 +30,17 @@ The synth touch pad input range is mapped onto a MIDI range, directly translatin
 
 The breadboard has an LED and switch for indicating when the synth is turned on.
 
-![top view](screenshots\led.jpg)
+![top view](LA2\screenshots\led.jpg)
 
 There is also a web AP for changing the drum kit and synths, controlled with the webserver utilities when different GET requests are made.
 
-![enter image description here](screenshots\web.jpg)
+![enter image description here](LA2\screenshots\web.jpg)
 
 ### Challenges
 
 There were challenges developing this synth: when I used both touchRead with regular pins for the drums and the IDF touch_pad utilities for the synth, the signals received became noisy.
 
-![enter image description here](screenshots\touchpadreadings.png)
+![enter image description here](LA2\screenshots\touchpadreadings.png)
 
 I solved this by using touch_pad for all pins. The readings were also noisy for the drum kit, resulting in false positive touches: using the touch pad API reduced this noise.
 
